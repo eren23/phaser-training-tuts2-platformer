@@ -1,0 +1,14 @@
+{ "columns":64,
+ "image":"main_lev_build_1.png",
+ "imageheight":1024,
+ "imagewidth":1024,
+ "margin":0,
+ "name":"main_lev_build_1",
+ "spacing":0,
+ "tilecount":4096,
+ "tiledversion":"1.4.3",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":1.4
+}
