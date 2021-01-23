@@ -1,4 +1,12 @@
 { "columns":64,
+ "editorsettings":
+    {
+     "export":
+        {
+         "format":"",
+         "target":"."
+        }
+    },
  "image":"main_lev_build_1.png",
  "imageheight":1024,
  "imagewidth":1024,
@@ -6,8 +14,45 @@
  "name":"main_lev_build_1",
  "spacing":0,
  "tilecount":4096,
- "tiledversion":"1.4.3",
+ "tiledversion":"1.4.2",
  "tileheight":16,
+ "tiles":[
+        {
+         "id":1674,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":1675,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":1738,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }, 
+        {
+         "id":1739,
+         "properties":[
+                {
+                 "name":"collides",
+                 "type":"bool",
+                 "value":true
+                }]
+        }],
  "tilewidth":16,
  "type":"tileset",
  "version":1.4
