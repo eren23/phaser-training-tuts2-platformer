@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Player from "../entities/Player";
+import Enemies from "../groups/Enemies";
 
 class PlayScene extends Phaser.Scene {
   constructor(config) {
@@ -12,10 +13,18 @@ class PlayScene extends Phaser.Scene {
     const layers = this.createLayers(map);
     const playerZones = this.getPlayerZones(layers.playerZones);
     const player = this.createPlayer(playerZones);
+    const enemies = this.createEnemies(layers.enemySpawns);
 
     this.createPlayerColliders(player, {
       colliders: {
         platformsColliders: layers.platformsColliders,
+      },
+    });
+
+    this.createEnemyColliders(enemies, {
+      colliders: {
+        platformsColliders: layers.platformsColliders,
+        player,
       },
     });
 
@@ -35,13 +44,15 @@ class PlayScene extends Phaser.Scene {
   createLayers(map) {
     const tileset = map.getTileset("main_lev_build_1");
 
-    const playerZones = map.getObjectLayer("player_zones");
     const platformsColliders = map.createStaticLayer("platforms_colliders", tileset);
     const environment = map.createStaticLayer("environment", tileset);
     const platforms = map.createStaticLayer("platforms", tileset);
 
+    const playerZones = map.getObjectLayer("player_zones");
+    const enemySpawns = map.getObjectLayer("enemy_spawns");
+
     platformsColliders.setCollisionByProperty({ collides: true });
-    return { environment, platforms, platformsColliders, playerZones };
+    return { environment, platforms, platformsColliders, playerZones, enemySpawns };
   }
 
   createPlayer({ start }) {
@@ -51,6 +62,23 @@ class PlayScene extends Phaser.Scene {
 
   createPlayerColliders(player, { colliders }) {
     player.addCollider(colliders.platformsColliders);
+  }
+
+  createEnemies(spawnLayer) {
+    const enemies = new Enemies(this);
+    const enemyTypes = enemies.getTypes();
+
+    spawnLayer.objects.forEach((spawn) => {
+      const enemy = new enemyTypes[spawn.type](this, spawn.x, spawn.y); // firsts value should be the scene
+      enemies.add(enemy);
+    });
+
+    return enemies;
+  }
+
+  createEnemyColliders(enemies, { colliders }) {
+    enemies.addCollider(colliders.platformsColliders).addCollider(colliders.player);
+    // when we return this context from our collider we can chain like that
   }
 
   setupFollowUpCamera(player) {

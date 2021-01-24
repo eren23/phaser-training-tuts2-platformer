@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import initAnimations from "../entities/playerAnims";
+import initAnimations from "./anims/playerAnims";
 import collidable from "../mixins/collidable";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -25,6 +25,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.jumpCount = 0;
     this.concecutiveJumps = 1;
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
+    this.setSize(20, 38);
 
     this.body.setGravityY(this.gravity);
     this.setCollideWorldBounds(true);

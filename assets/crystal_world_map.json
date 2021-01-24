@@ -47,6 +47,41 @@
         }, 
         {
          "draworder":"topdown",
+         "id":6,
+         "name":"enemy_spawns",
+         "objects":[
+                {
+                 "height":0,
+                 "id":7,
+                 "name":"Spawn",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Birdman",
+                 "visible":true,
+                 "width":0,
+                 "x":400,
+                 "y":192
+                }, 
+                {
+                 "height":0,
+                 "id":8,
+                 "name":"Spawn",
+                 "point":true,
+                 "rotation":0,
+                 "type":"Birdman",
+                 "visible":true,
+                 "width":0,
+                 "x":736,
+                 "y":336
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"player_zones",
          "objects":[
@@ -80,8 +115,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":4,
+ "nextlayerid":7,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",
