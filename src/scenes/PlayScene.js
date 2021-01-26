@@ -13,7 +13,7 @@ class PlayScene extends Phaser.Scene {
     const layers = this.createLayers(map);
     const playerZones = this.getPlayerZones(layers.playerZones);
     const player = this.createPlayer(playerZones);
-    const enemies = this.createEnemies(layers.enemySpawns);
+    const enemies = this.createEnemies(layers.enemySpawns, layers.platformsColliders);
 
     this.createPlayerColliders(player, {
       colliders: {
@@ -31,43 +31,8 @@ class PlayScene extends Phaser.Scene {
     this.setupFollowUpCamera(player);
     this.createEndOfLevel(playerZones.end, player);
 
-    this.plotting = false;
-    this.graphics = this.add.graphics();
-    this.line = new Phaser.Geom.Line();
-    this.graphics.lineStyle(1, 0x00ff00);
-
-    this.input.on("pointerdown", this.startDrawing, this);
-    this.input.on("pointerup", (pointer) => this.finishDrawing(pointer, layers.platforms), this);
+    // this.input.on("pointerup", (pointer) => this.finishDrawing(pointer, layers.platforms), this);
     //since we are passing additioal argument we used a wrapper function around the finishdrawing
-  }
-
-  update() {
-    if (this.plotting) {
-      const pointer = this.input.activePointer;
-      this.line.x2 = pointer.worldX;
-      this.line.y2 = pointer.worldY;
-      this.graphics.clear();
-      this.graphics.strokeLineShape(this.line);
-    }
-  }
-
-  drawDebug(layer) {
-    const collidingTileColor = new Phaser.Display.Color(243, 134, 48, 100);
-    layer.renderDebug(this.graphics, {
-      tileColor: null,
-      collidingTileColor,
-    });
-  }
-
-  startDrawing(pointer) {
-    if (this.tileHits && this.tileHits.length > 0) {
-      this.tileHits.forEach((tile) => {
-        tile.index !== -1 && tile.setCollision(false);
-      });
-    }
-    this.plotting = true;
-    this.line.x1 = pointer.worldX;
-    this.line.y1 = pointer.worldY;
   }
 
   finishDrawing(pointer, layer) {
@@ -118,12 +83,13 @@ class PlayScene extends Phaser.Scene {
     player.addCollider(colliders.platformsColliders);
   }
 
-  createEnemies(spawnLayer) {
+  createEnemies(spawnLayer, platformsColliders) {
     const enemies = new Enemies(this);
     const enemyTypes = enemies.getTypes();
 
     spawnLayer.objects.forEach((spawn) => {
       const enemy = new enemyTypes[spawn.type](this, spawn.x, spawn.y); // firsts value should be the scene
+      enemy.setPlatformCollider(platformsColliders);
       enemies.add(enemy);
     });
 
