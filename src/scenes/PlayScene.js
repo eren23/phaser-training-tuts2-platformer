@@ -96,8 +96,12 @@ class PlayScene extends Phaser.Scene {
     return enemies;
   }
 
+  onPlayerCollision(enemy, player) {
+    player.takesHit(enemy);
+  }
+
   createEnemyColliders(enemies, { colliders }) {
-    enemies.addCollider(colliders.platformsColliders).addCollider(colliders.player);
+    enemies.addCollider(colliders.platformsColliders).addCollider(colliders.player, this.onPlayerCollision);
     // when we return this context from our collider we can chain like that
   }
 

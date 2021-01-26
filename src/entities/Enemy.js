@@ -4,6 +4,7 @@ import collidable from "../mixins/collidable";
 class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, key) {
     super(scene, x, y, key);
+    this.config = scene.config;
 
     scene.add.existing(this); // our players sprites
     scene.physics.add.existing(this); // physics
@@ -19,7 +20,10 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   init() {
     this.gravity = 500;
-    this.speed = 150;
+    this.speed = 75;
+    this.timeFromLastTurn = 0;
+    this.maxPatrolDistance = 250;
+    this.currentPatrolDistance = 0;
     this.rayGraphics = this.scene.add.graphics({ lineStyle: { width: 2, color: 0xaa00aa } });
 
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
@@ -30,6 +34,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     this.setImmovable(true);
     this.setOrigin(1, 1);
+    this.setVelocityX(this.speed);
   }
 
   initEvents() {
@@ -39,14 +44,31 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(time, delta) {
-    this.setVelocityX(30);
-    const { ray, hasHit } = this.raycast(this.body, this.platformsCollidersLayer, 30, 5);
+    this.partol(time);
+  }
 
-    if (hasHit) {
+  partol(time) {
+    if (!this.body || !this.body.onFloor()) {
+      return;
+    }
+    this.currentPatrolDistance += Math.abs(this.body.deltaX());
+    const { ray, hasHit } = this.raycast(this.body, this.platformsCollidersLayer, {
+      raylength: 30,
+      precision: 0,
+      steepnes: 0.3,
+    });
+
+    if ((!hasHit || this.currentPatrolDistance >= this.maxPatrolDistance) && this.timeFromLastTurn + 100 < time) {
+      this.setFlipX(!this.flipX);
+      this.setVelocityX((this.speed = -this.speed));
+      this.timeFromLastTurn = time;
+      this.currentPatrolDistance = 0;
     }
 
-    this.rayGraphics.clear();
-    this.rayGraphics.strokeLineShape(ray);
+    if (this.config.debug && ray) {
+      this.rayGraphics.clear();
+      this.rayGraphics.strokeLineShape(ray);
+    }
   }
 
   setPlatformCollider(platformsCollidersLayer) {

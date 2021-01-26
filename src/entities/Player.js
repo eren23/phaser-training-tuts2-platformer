@@ -24,6 +24,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.jumpCount = 0;
     this.concecutiveJumps = 1;
+    this.hasBeenHit = false;
+    const bounceRange = [90, 250];
+    this.bounceVelocity = Phaser.Math.Between(...bounceRange);
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
     this.setSize(20, 38);
 
@@ -41,6 +44,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    if (this.hasBeenHit) {
+      return;
+    }
     const { left, right, space, up } = this.cursors;
     const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space); // only returns true pey key press
     const isUpJustDown = Phaser.Input.Keyboard.JustDown(up); // only returns true pey key press
@@ -67,6 +73,36 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     onFloor ? (this.body.velocity.x !== 0 ? this.play("run", true) : this.play("idle", true)) : this.play("jump", true);
     //dont play it again if it's playing
     //second value ignore if playing
+  }
+
+  playDamageTween() {
+    return this.scene.tweens.add({ targets: this, duration: 100, repeat: -1, tint: 0xffffff });
+  }
+
+  bounceOff() {
+    this.body.touching.right ? this.setVelocityX(-this.bounceVelocity) : this.setVelocityX(this.bounceVelocity);
+
+    setTimeout(() => {
+      this.setVelocityY(-this.bounceVelocity);
+    }, 0);
+  }
+  takesHit(initiator) {
+    if (this.hasBeenHit) {
+      return;
+    }
+    this.hasBeenHit = true;
+    this.bounceOff();
+    const hitAnim = this.playDamageTween();
+    this.scene.time.delayedCall(1000, () => {
+      (this.hasBeenHit = false), hitAnim.stop(), this.clearTint();
+    });
+    // this.scene.time.addEvent({
+    //   delay: 1000,
+    //   callback: () => {
+    //     this.hasBeenHit = false;
+    //   },
+    //   loop: false,
+    // });
   }
 }
 
