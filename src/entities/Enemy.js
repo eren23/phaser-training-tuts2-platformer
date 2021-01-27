@@ -25,7 +25,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.maxPatrolDistance = 250;
     this.currentPatrolDistance = 0;
     this.rayGraphics = this.scene.add.graphics({ lineStyle: { width: 2, color: 0xaa00aa } });
-
+    this.damage = 10;
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
     this.platformsCollidersLayer = null;
     this.body.setGravityY(this.gravity);

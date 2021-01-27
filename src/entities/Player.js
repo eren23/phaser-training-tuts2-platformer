@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import HealthBar from "../hud/HealthBar";
 import initAnimations from "./anims/playerAnims";
 import collidable from "../mixins/collidable";
 
@@ -27,9 +28,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.hasBeenHit = false;
     const bounceRange = [90, 250];
     this.bounceVelocity = Phaser.Math.Between(...bounceRange);
+    this.health = 100;
+    this.hp = new HealthBar(
+      this.scene,
+      this.scene.config.leftTopCorner.x + 5,
+      this.scene.config.leftTopCorner.y + 5,
+      2,
+      this.health
+    );
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
     this.setSize(20, 38);
-
     this.body.setGravityY(this.gravity);
     this.setCollideWorldBounds(true);
     this.setOrigin(1, 1);
@@ -93,6 +101,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.hasBeenHit = true;
     this.bounceOff();
     const hitAnim = this.playDamageTween();
+    this.health -= initiator.damage;
+    this.hp.decrease(this.health);
     this.scene.time.delayedCall(1000, () => {
       (this.hasBeenHit = false), hitAnim.stop(), this.clearTint();
     });
