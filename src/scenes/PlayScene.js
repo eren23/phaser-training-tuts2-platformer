@@ -100,10 +100,18 @@ class PlayScene extends Phaser.Scene {
     player.takesHit(enemy);
   }
 
-  createEnemyColliders(enemies, { colliders }) {
-    enemies.addCollider(colliders.platformsColliders).addCollider(colliders.player, this.onPlayerCollision);
-    // when we return this context from our collider we can chain like that
+  onWeaponHit(entity, source) {
+    entity.takesHit(source);
   }
+
+  createEnemyColliders(enemies, { colliders }) {
+    enemies
+      .addCollider(colliders.platformsColliders)
+      .addCollider(colliders.player, this.onPlayerCollision)
+      .addCollider(colliders.player.projectiles, this.onWeaponHit);
+  }
+
+  // when we return this context from our collider we can chain like that
 
   setupFollowUpCamera(player) {
     const { height, width, mapOffset, zoomFactor } = this.config;

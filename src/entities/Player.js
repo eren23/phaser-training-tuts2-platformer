@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import HealthBar from "../hud/HealthBar";
 import initAnimations from "./anims/playerAnims";
 import collidable from "../mixins/collidable";
+import anims from "../mixins/anims";
+import Projectiles from "../attacks/Projectiles";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -12,6 +14,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     //Mixins
     Object.assign(this, collidable); // what we do here is basically  we copy all the collidable properties to this
+    Object.assign(this, anims);
 
     this.init();
     this.initEvents();
@@ -28,6 +31,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.hasBeenHit = false;
     const bounceRange = [90, 250];
     this.bounceVelocity = Phaser.Math.Between(...bounceRange);
+
+    this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
+    this.projectiles = new Projectiles(this.scene);
+
     this.health = 100;
     this.hp = new HealthBar(
       this.scene,
@@ -43,6 +50,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(1, 1);
 
     initAnimations(this.scene.anims);
+
+    this.scene.input.keyboard.on("keydown-Q", () => {
+      this.play("throw", true);
+      this.projectiles.fireProjectile(this);
+    });
   }
 
   initEvents() {
@@ -61,9 +73,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const onFloor = this.body.onFloor();
 
     if (left.isDown) {
+      this.lastDirection = Phaser.Physics.Arcade.FACING_LEFT;
       this.setVelocityX(-this.playerSpeed);
       this.setFlipX(true);
     } else if (right.isDown) {
+      this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
       this.setVelocityX(this.playerSpeed);
       this.setFlipX(false);
     } else {
@@ -76,6 +90,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
     if (onFloor) {
       this.jumpCount = 0;
+    }
+
+    if (this.isPlayingAnims("throw")) {
+      return;
     }
 
     onFloor ? (this.body.velocity.x !== 0 ? this.play("run", true) : this.play("idle", true)) : this.play("jump", true);
