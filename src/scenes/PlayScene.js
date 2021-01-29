@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import Player from "../entities/Player";
 import Enemies from "../groups/Enemies";
+import initAnims from "../anims/index";
 
 class PlayScene extends Phaser.Scene {
   constructor(config) {
@@ -30,6 +31,7 @@ class PlayScene extends Phaser.Scene {
 
     this.setupFollowUpCamera(player);
     this.createEndOfLevel(playerZones.end, player);
+    initAnims(this.anims);
 
     // this.input.on("pointerup", (pointer) => this.finishDrawing(pointer, layers.platforms), this);
     //since we are passing additioal argument we used a wrapper function around the finishdrawing
