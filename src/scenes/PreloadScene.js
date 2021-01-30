@@ -21,6 +21,11 @@ class PreloadScene extends Phaser.Scene {
       frameHeight: 64,
       spacing: 32,
     });
+    this.load.spritesheet("snaky", "../../assets/enemy/enemy_sheet_2.png", {
+      frameWidth: 32,
+      frameHeight: 64,
+      spacing: 32,
+    });
 
     this.load.spritesheet("player-throw", "../../assets/player/throw_attack_sheet_1.png", {
       frameWidth: 32,
@@ -30,6 +35,11 @@ class PreloadScene extends Phaser.Scene {
     this.load.spritesheet("hit-sheet", "../../assets/weapons/hit_effect_sheet.png", {
       frameWidth: 32,
       frameHeight: 32,
+    });
+    this.load.spritesheet("sword-default", "../../assets/weapons/sword_sheet_1.png", {
+      frameWidth: 52,
+      frameHeight: 32,
+      spacing: 16,
     });
   }
   create() {

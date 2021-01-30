@@ -110,7 +110,8 @@ class PlayScene extends Phaser.Scene {
     enemies
       .addCollider(colliders.platformsColliders)
       .addCollider(colliders.player, this.onPlayerCollision)
-      .addCollider(colliders.player.projectiles, this.onWeaponHit);
+      .addCollider(colliders.player.projectiles, this.onWeaponHit)
+      .addOverlap(colliders.player.MeleeWeapon, this.onWeaponHit);
   }
 
   // when we return this context from our collider we can chain like that
