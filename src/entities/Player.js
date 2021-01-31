@@ -35,7 +35,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.bounceVelocity = Phaser.Math.Between(...bounceRange);
 
     this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
-    this.projectiles = new Projectiles(this.scene);
+    this.projectiles = new Projectiles(this.scene, "iceball-1");
     this.MeleeWeapon = new MeleeWeapon(this.scene, 0, 0, "sword-default");
     this.timeFromLastSwing = null;
     this.health = 100;
@@ -56,7 +56,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.input.keyboard.on("keydown-Q", () => {
       this.play("throw", true);
-      this.projectiles.fireProjectile(this);
+      this.projectiles.fireProjectile(this, "iceball");
     });
 
     this.scene.input.keyboard.on("keydown-E", () => {
@@ -124,15 +124,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityY(-this.bounceVelocity);
     }, 0);
   }
-  takesHit(initiator) {
+  takesHit(source) {
     if (this.hasBeenHit) {
       return;
     }
     this.hasBeenHit = true;
     this.bounceOff();
     const hitAnim = this.playDamageTween();
-    this.health -= initiator.damage;
+    this.health -= source.damage;
     this.hp.decrease(this.health);
+    source.deliversHit(this);
     this.scene.time.delayedCall(1000, () => {
       (this.hasBeenHit = false), hitAnim.stop(), this.clearTint();
     });

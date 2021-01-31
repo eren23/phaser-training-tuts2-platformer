@@ -35,7 +35,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     this.setCollideWorldBounds(true);
     this.setImmovable(true);
-    this.setOrigin(1, 1);
+    this.setOrigin(0.5, 1);
     this.setVelocityX(this.speed);
   }
 
@@ -62,9 +62,8 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     this.currentPatrolDistance += Math.abs(this.body.deltaX());
     const { ray, hasHit } = this.raycast(this.body, this.platformsCollidersLayer, {
-      raylength: 30,
-      precision: 0,
-      steepnes: 0.3,
+      precision: 1,
+      steepnes: 0.2,
     });
 
     if ((!hasHit || this.currentPatrolDistance >= this.maxPatrolDistance) && this.timeFromLastTurn + 100 < time) {
@@ -85,8 +84,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   takesHit(source) {
-    this.health -= source.damage;
     source.deliversHit(this);
+    this.health -= source.damage;
+
     if (this.health <= 0) {
       this.setTint(0xff0000);
       this.setVelocity(0, -200);
