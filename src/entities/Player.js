@@ -54,19 +54,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     initAnimations(this.scene.anims);
 
-    this.scene.input.keyboard.on("keydown-Q", () => {
-      this.play("throw", true);
-      this.projectiles.fireProjectile(this, "iceball");
-    });
-
-    this.scene.input.keyboard.on("keydown-E", () => {
-      if (this.timeFromLastSwing && this.timeFromLastSwing + this.MeleeWeapon.attackSpeed > getTimestamp()) {
-        return;
-      }
-      this.play("throw", true);
-      this.MeleeWeapon.swing(this);
-      this.timeFromLastSwing = getTimestamp();
-    });
+    this.handleAttacks();
   }
 
   initEvents() {
@@ -79,10 +67,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.hasBeenHit) {
       return;
     }
-    const { left, right, space, up } = this.cursors;
+    const { left, right, space, up, down } = this.cursors;
     const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space); // only returns true pey key press
     const isUpJustDown = Phaser.Input.Keyboard.JustDown(up); // only returns true pey key press
     const onFloor = this.body.onFloor();
+
+    this.handleMovements();
 
     if (left.isDown) {
       this.lastDirection = Phaser.Physics.Arcade.FACING_LEFT;
@@ -111,6 +101,35 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     onFloor ? (this.body.velocity.x !== 0 ? this.play("run", true) : this.play("idle", true)) : this.play("jump", true);
     //dont play it again if it's playing
     //second value ignore if playing
+  }
+
+  handleAttacks() {
+    this.scene.input.keyboard.on("keydown-Q", () => {
+      this.play("throw", true);
+      this.projectiles.fireProjectile(this, "iceball");
+    });
+
+    this.scene.input.keyboard.on("keydown-E", () => {
+      if (this.timeFromLastSwing && this.timeFromLastSwing + this.MeleeWeapon.attackSpeed > getTimestamp()) {
+        return;
+      }
+      this.play("throw", true);
+      this.MeleeWeapon.swing(this);
+      this.timeFromLastSwing = getTimestamp();
+    });
+  }
+
+  handleMovements() {
+    this.scene.input.keyboard.on("keydown-DOWN", () => {
+      this.body.setSize(this.width, this.height / 2);
+      this.setOffset(0, this.height / 2);
+      this.setVelocityX(0);
+      this.play("slide", true);
+    });
+    this.scene.input.keyboard.on("keydown-UP", () => {
+      this.body.setSize(this.width, 38);
+      this.setOffset(0, 0);
+    });
   }
 
   playDamageTween() {
