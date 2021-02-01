@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import collidable from "../mixins/collidable";
 import anims from "../mixins/anims";
+import EffectManager from "../effects/EffectManager";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, key) {
@@ -32,6 +33,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     //if you want to access to scene from a arcade super class you need to define it like that, otherwise "this" will refer to player
     this.platformsCollidersLayer = null;
     this.body.setGravityY(this.gravity);
+    this.effectManager = new EffectManager(this.scene);
 
     this.setCollideWorldBounds(true);
     this.setImmovable(true);
@@ -81,6 +83,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   setPlatformCollider(platformsCollidersLayer) {
     this.platformsCollidersLayer = platformsCollidersLayer;
+  }
+
+  deliversHit(target) {
+    const impactPosition = { x: this.x, y: this.getRightCenter().y }; //important to define before reset
+
+    this.effectManager.playEffectOn("hit-effect", target, impactPosition);
   }
 
   takesHit(source) {

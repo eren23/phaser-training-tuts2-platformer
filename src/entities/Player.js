@@ -31,6 +31,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.jumpCount = 0;
     this.concecutiveJumps = 1;
     this.hasBeenHit = false;
+    this.isSliding = false;
     const bounceRange = [90, 250];
     this.bounceVelocity = Phaser.Math.Between(...bounceRange);
 
@@ -64,10 +65,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if (this.hasBeenHit) {
+    if (this.hasBeenHit || this.isSliding) {
       return;
     }
-    const { left, right, space, up, down } = this.cursors;
+    const { left, right, space, up } = this.cursors;
     const isSpaceJustDown = Phaser.Input.Keyboard.JustDown(space); // only returns true pey key press
     const isUpJustDown = Phaser.Input.Keyboard.JustDown(up); // only returns true pey key press
     const onFloor = this.body.onFloor();
@@ -121,14 +122,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   handleMovements() {
     this.scene.input.keyboard.on("keydown-DOWN", () => {
+      // if (!this.body.onFloor()) {
+      //   return;
+      // }
+      const { left, right, space, up } = this.cursors;
       this.body.setSize(this.width, this.height / 2);
       this.setOffset(0, this.height / 2);
-      this.setVelocityX(0);
+      if (left.isDown) {
+        this.setVelocityX(-100);
+      } else {
+        this.setVelocityX(100);
+      }
+
       this.play("slide", true);
+      this.isSliding = true;
     });
-    this.scene.input.keyboard.on("keydown-UP", () => {
+    this.scene.input.keyboard.on("keyup-DOWN", () => {
       this.body.setSize(this.width, 38);
       this.setOffset(0, 0);
+      this.isSliding = false;
     });
   }
 

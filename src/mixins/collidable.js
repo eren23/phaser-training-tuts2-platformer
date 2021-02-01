@@ -25,7 +25,7 @@ export default {
       };
     }
 
-    console.log("Hitting the platform");
+    // console.log("Hitting the platform");
 
     const line = new Phaser.Geom.Line();
     let hasHit = false;
