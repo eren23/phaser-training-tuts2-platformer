@@ -25,4 +25,17 @@ export default (anims) => {
     frameRate: 3,
     repeat: -1,
   });
+  anims.create({
+    key: "diamond-shine",
+    frames: [
+      { key: "diamond-1" },
+      { key: "diamond-2" },
+      { key: "diamond-3" },
+      { key: "diamond-4" },
+      { key: "diamond-5" },
+      { key: "diamond-6" },
+    ],
+    frameRate: 5,
+    repeat: -1,
+  });
 };

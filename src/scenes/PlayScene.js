@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import Player from "../entities/Player";
 import Enemies from "../groups/Enemies";
 import initAnims from "../anims/index";
+import Collectable from "../collectables/Collectable";
 
 class PlayScene extends Phaser.Scene {
   constructor(config) {
@@ -11,15 +12,19 @@ class PlayScene extends Phaser.Scene {
 
   create() {
     const map = this.createMap();
+    initAnims(this.anims);
+
     const layers = this.createLayers(map);
     const playerZones = this.getPlayerZones(layers.playerZones);
     const player = this.createPlayer(playerZones);
     const enemies = this.createEnemies(layers.enemySpawns, layers.platformsColliders);
+    const collectables = this.createCollectables(layers.collectables);
 
     this.createPlayerColliders(player, {
       colliders: {
         platformsColliders: layers.platformsColliders,
         projectiles: enemies.getProjectiles(),
+        collectables,
       },
     });
 
@@ -32,29 +37,28 @@ class PlayScene extends Phaser.Scene {
 
     this.setupFollowUpCamera(player);
     this.createEndOfLevel(playerZones.end, player);
-    initAnims(this.anims);
 
     // this.input.on("pointerup", (pointer) => this.finishDrawing(pointer, layers.platforms), this);
     //since we are passing additioal argument we used a wrapper function around the finishdrawing
   }
 
-  finishDrawing(pointer, layer) {
-    this.line.x2 = pointer.worldX;
-    this.line.y2 = pointer.worldY;
-    this.graphics.clear();
-    this.graphics.strokeLineShape(this.line);
+  // finishDrawing(pointer, layer) {
+  //   this.line.x2 = pointer.worldX;
+  //   this.line.y2 = pointer.worldY;
+  //   this.graphics.clear();
+  //   this.graphics.strokeLineShape(this.line);
 
-    this.tileHits = layer.getTilesWithinShape(this.line);
-    if (this.tileHits.length > 0) {
-      this.tileHits.forEach((tile) => {
-        tile.index !== -1 && tile.setCollision(true);
-      });
-    }
+  //   this.tileHits = layer.getTilesWithinShape(this.line);
+  //   if (this.tileHits.length > 0) {
+  //     this.tileHits.forEach((tile) => {
+  //       tile.index !== -1 && tile.setCollision(true);
+  //     });
+  //   }
 
-    this.drawDebug(layer);
+  //   this.drawDebug(layer);
 
-    this.plotting = false;
-  }
+  //   this.plotting = false;
+  // }
 
   //Customs
   createMap() {
@@ -67,14 +71,26 @@ class PlayScene extends Phaser.Scene {
     const tileset = map.getTileset("main_lev_build_1");
 
     const platformsColliders = map.createStaticLayer("platforms_colliders", tileset);
-    const environment = map.createStaticLayer("environment", tileset);
+    const environment = map.createStaticLayer("environment", tileset).setDepth(-2);
     const platforms = map.createStaticLayer("platforms", tileset);
 
     const playerZones = map.getObjectLayer("player_zones");
     const enemySpawns = map.getObjectLayer("enemy_spawns");
+    const collectables = map.getObjectLayer("collectables");
 
     platformsColliders.setCollisionByProperty({ collides: true });
-    return { environment, platforms, platformsColliders, playerZones, enemySpawns };
+    return { environment, platforms, platformsColliders, playerZones, enemySpawns, collectables };
+  }
+
+  createCollectables(collectableLayer) {
+    const collectables = this.physics.add.staticGroup().setDepth(-1);
+    collectableLayer.objects.forEach((collectableO) => {
+      collectables.add(new Collectable(this, collectableO.x, collectableO.y, "diamon")); //weird?
+    });
+
+    collectables.playAnimation("diamond-shine");
+
+    return collectables;
   }
 
   createPlayer({ start }) {
@@ -82,8 +98,16 @@ class PlayScene extends Phaser.Scene {
     return player;
   }
 
+  onCollect(entity, collectable) {
+    collectable.disableBody(true, true); //first true disables game object, default false, second one is hide
+    console.log("Collected");
+  }
+
   createPlayerColliders(player, { colliders }) {
-    player.addCollider(colliders.platformsColliders).addCollider(colliders.projectiles, this.onWeaponHit);
+    player
+      .addCollider(colliders.platformsColliders)
+      .addCollider(colliders.projectiles, this.onWeaponHit)
+      .addOverlap(colliders.collectables, this.onCollect);
   }
 
   createEnemies(spawnLayer, platformsColliders) {
