@@ -173,6 +173,12 @@
                  "height":14,
                  "id":16,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"int",
+                         "value":10
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -269,6 +275,12 @@
                  "height":14,
                  "id":24,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"int",
+                         "value":4
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -281,6 +293,12 @@
                  "height":14,
                  "id":25,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"int",
+                         "value":4
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -293,6 +311,12 @@
                  "height":14,
                  "id":26,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"int",
+                         "value":2
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -395,20 +419,19 @@
                  "width":16,
                  "x":1280,
                  "y":128
-                }, 
-                {
-                 "gid":4097,
-                 "height":14,
-                 "id":36,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":742.666666666667,
-                 "y":563
                 }],
          "opacity":1,
+         "properties":[
+                {
+                 "name":"score",
+                 "type":"int",
+                 "value":1
+                }, 
+                {
+                 "name":"type",
+                 "type":"string",
+                 "value":"diamond"
+                }],
          "type":"objectgroup",
          "visible":true,
          "x":0,
@@ -489,7 +512,7 @@
          "tiles":[
                 {
                  "id":0,
-                 "image":"collectibles\/diamond.png",
+                 "image":"collectables\/diamond.png",
                  "imageheight":14,
                  "imagewidth":16
                 }],

@@ -130,8 +130,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.setOffset(0, this.height / 2);
       if (left.isDown) {
         this.setVelocityX(-100);
-      } else {
+      } else if (right.isDown) {
         this.setVelocityX(100);
+      } else {
+        this.setVelocityX(0);
       }
 
       this.play("slide", true);
