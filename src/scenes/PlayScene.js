@@ -11,6 +11,7 @@ class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.score = 0;
     const map = this.createMap();
     initAnims(this.anims);
 
@@ -98,14 +99,15 @@ class PlayScene extends Phaser.Scene {
 
   onCollect(entity, collectable) {
     collectable.disableBody(true, true); //first true disables game object, default false, second one is hide
-    console.log("Collected");
+    this.score += collectable.score;
+    console.log("Collected", this.score);
   }
 
   createPlayerColliders(player, { colliders }) {
     player
       .addCollider(colliders.platformsColliders)
       .addCollider(colliders.projectiles, this.onWeaponHit)
-      .addOverlap(colliders.collectables, this.onCollect);
+      .addOverlap(colliders.collectables, this.onCollect, this);
   }
 
   createEnemies(spawnLayer, platformsColliders) {

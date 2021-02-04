@@ -5,6 +5,7 @@ class Collectable extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y);
     scene.add.existing(this);
     this.score = 1;
+    // this.setOrigin(0, 1); later check out what's wrong!!
     scene.tweens.add({
       targets: this,
       y: this.y - Phaser.Math.Between(2.5, 3.25),

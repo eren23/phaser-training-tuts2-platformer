@@ -11,7 +11,7 @@ class Collectables extends Phaser.Physics.Arcade.StaticGroup {
 
   mapProperties(propertiesList) {
     if (!propertiesList || propertiesList.length === 0) {
-      return;
+      return {};
     }
     console.log(propertiesList);
     return propertiesList.reduce((map, obj) => {
@@ -21,10 +21,14 @@ class Collectables extends Phaser.Physics.Arcade.StaticGroup {
   }
 
   addFromLayer(layer) {
-    const properties = this.mapProperties(layer.properties);
+    const { score: defaultScore, type } = this.mapProperties(layer.properties);
+
     layer.objects.forEach((collectableO) => {
-      this.get(collectableO.x, collectableO.y, properties.type);
+      const collectable = this.get(collectableO.x, collectableO.y, type);
+      const props = this.mapProperties(collectableO.properties);
+      collectable.score = props.score || defaultScore;
     });
+    this.getChildren();
   }
 }
 

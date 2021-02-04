@@ -149,6 +149,12 @@
                  "height":14,
                  "id":14,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"string",
+                         "value":"3"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -329,6 +335,12 @@
                  "height":14,
                  "id":27,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"score",
+                         "type":"string",
+                         "value":"4"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
