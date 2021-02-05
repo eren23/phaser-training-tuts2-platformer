@@ -13,15 +13,20 @@ const SHARED_CONFIG = {
   width: WIDTH,
   height: HEIGHT,
   zoomFactor: ZOOM_FACTOR,
-  debug: true,
+  debug: false,
   leftTopCorner: {
     x: (WIDTH - WIDTH / ZOOM_FACTOR) / 2,
     y: (HEIGHT - HEIGHT / ZOOM_FACTOR) / 2,
   },
   rightTopCorner: {
-    x: (WIDTH / ZOOM_FACTOR + (WIDTH - WIDTH / ZOOM_FACTOR)) / 2,
+    x: WIDTH / ZOOM_FACTOR + (WIDTH - WIDTH / ZOOM_FACTOR) / 2,
     y: (HEIGHT - HEIGHT / ZOOM_FACTOR) / 2,
   },
+  rightBottomCorner: {
+    x: WIDTH / ZOOM_FACTOR + (WIDTH - WIDTH / ZOOM_FACTOR) / 2,
+    y: HEIGHT / ZOOM_FACTOR + (HEIGHT - HEIGHT / ZOOM_FACTOR) / 2,
+  },
+  lastLevel: 2,
 };
 
 const Scenes = [PreloadScene, PlayScene];
