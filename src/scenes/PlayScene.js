@@ -4,6 +4,7 @@ import Enemies from "../groups/Enemies";
 import initAnims from "../anims/index";
 import Collectables from "../groups/Collectables";
 import Hud from "../hud";
+import EventEmitter from "../events/Emitter";
 
 class PlayScene extends Phaser.Scene {
   constructor(config) {
@@ -11,7 +12,7 @@ class PlayScene extends Phaser.Scene {
     this.config = config;
   }
 
-  create() {
+  create({ gameStatus }) {
     this.score = 0;
     this.hud = new Hud(this, 0, 0);
 
@@ -24,11 +25,14 @@ class PlayScene extends Phaser.Scene {
     const enemies = this.createEnemies(layers.enemySpawns, layers.platformsColliders);
     const collectables = this.createCollectables(layers.collectables);
 
+    this.createBG(map);
+
     this.createPlayerColliders(player, {
       colliders: {
         platformsColliders: layers.platformsColliders,
         projectiles: enemies.getProjectiles(),
         collectables,
+        traps: layers.traps,
       },
     });
 
@@ -41,6 +45,12 @@ class PlayScene extends Phaser.Scene {
 
     this.setupFollowUpCamera(player);
     this.createEndOfLevel(playerZones.end, player);
+
+    if (gameStatus === "PLAYER_LOSE") {
+      return;
+    } else {
+      this.createGameEvents();
+    }
 
     // this.input.on("pointerup", (pointer) => this.finishDrawing(pointer, layers.platforms), this);
     //since we are passing additioal argument we used a wrapper function around the finishdrawing
@@ -82,8 +92,26 @@ class PlayScene extends Phaser.Scene {
     const enemySpawns = map.getObjectLayer("enemy_spawns");
     const collectables = map.getObjectLayer("collectables");
 
+    const traps = map.createStaticLayer("traps", tileset);
+
     platformsColliders.setCollisionByProperty({ collides: true });
-    return { environment, platforms, platformsColliders, playerZones, enemySpawns, collectables };
+    traps.setCollisionByExclusion(-1);
+    return { environment, platforms, platformsColliders, playerZones, enemySpawns, collectables, traps };
+  }
+
+  createBG(map) {
+    const bgObject = map.getObjectLayer("distance_bg").objects[0];
+    this.add
+      .tileSprite(bgObject.x, bgObject.y, this.config.width, bgObject.height, "bg-spikes-dark")
+      .setOrigin(0, 1)
+      .setDepth(-10)
+      .setScrollFactor(0, 1);
+  }
+
+  createGameEvents() {
+    EventEmitter.on("PLAYER_LOSE", () => {
+      this.scene.restart({ gameStatus: "PLAYER_LOSE" });
+    });
   }
 
   createCollectables(collectableLayer) {
@@ -109,7 +137,8 @@ class PlayScene extends Phaser.Scene {
   createPlayerColliders(player, { colliders }) {
     player
       .addCollider(colliders.platformsColliders)
-      .addCollider(colliders.projectiles, this.onWeaponHit)
+      .addCollider(colliders.projectiles, this.onHit)
+      .addCollider(colliders.traps, this.onHit)
       .addOverlap(colliders.collectables, this.onCollect, this);
   }
 
@@ -130,7 +159,7 @@ class PlayScene extends Phaser.Scene {
     player.takesHit(enemy);
   }
 
-  onWeaponHit(entity, source) {
+  onHit(entity, source) {
     entity.takesHit(source);
   }
 
@@ -138,8 +167,8 @@ class PlayScene extends Phaser.Scene {
     enemies
       .addCollider(colliders.platformsColliders)
       .addCollider(colliders.player, this.onPlayerCollision)
-      .addCollider(colliders.player.projectiles, this.onWeaponHit)
-      .addOverlap(colliders.player.MeleeWeapon, this.onWeaponHit);
+      .addCollider(colliders.player.projectiles, this.onHit)
+      .addOverlap(colliders.player.MeleeWeapon, this.onHit);
   }
 
   // when we return this context from our collider we can chain like that

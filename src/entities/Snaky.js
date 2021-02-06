@@ -25,6 +25,9 @@ class Snaky extends Enemy {
   update(time, delta) {
     // connects with the enemy update
     super.update(time, delta);
+    if (!this.active) {
+      return;
+    }
     if (this.body && this.body.velocity.x > 0) {
       this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
     } else {
