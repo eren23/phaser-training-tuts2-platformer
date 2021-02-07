@@ -6,11 +6,15 @@ class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.tilemapTiledJSON("map", "../../assets/crystal_world_map.json");
+    this.load.tilemapTiledJSON("level_1", "../../assets/crystal_world_map_level_1.json");
+    this.load.tilemapTiledJSON("level_2", "../../assets/crystal_world_map_level_2.json");
 
     this.load.image("tiles-1", "../../assets/main_lev_build_1.png");
     this.load.image("tiles-2", "../../assets/main_lev_build_2.png");
+    this.load.image("bg-spikes-tileset", "../../assets/bg_spikes_tileset.png");
+
     this.load.image("bg-spikes-dark", "../../assets/bg_spikes_dark.png");
+    this.load.image("sky-play", "../../assets/sky_play.png");
 
     this.load.image("iceball-1", "/assets/weapons/iceball_001.png");
     this.load.image("iceball-2", "/assets/weapons/iceball_002.png");
@@ -64,10 +68,20 @@ class PreloadScene extends Phaser.Scene {
       frameHeight: 32,
       spacing: 16,
     });
+
+    this.load.once("complete", () => {
+      this.startGame();
+    });
   }
-  create() {
+
+  startGame() {
+    this.registry.set("level", 1);
     this.scene.start("PlayScene");
   }
+
+  // create() {
+  //   this.scene.start("PlayScene");
+  // }
 }
 
 export default PreloadScene;

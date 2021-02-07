@@ -40,7 +40,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.projectiles = new Projectiles(this.scene, "iceball-1");
     this.MeleeWeapon = new MeleeWeapon(this.scene, 0, 0, "sword-default");
     this.timeFromLastSwing = null;
-    this.health = 20;
+    this.health = 100;
     this.hp = new HealthBar(
       this.scene,
       this.scene.config.leftTopCorner.x + 5,

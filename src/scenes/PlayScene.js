@@ -76,13 +76,17 @@ class PlayScene extends Phaser.Scene {
 
   //Customs
   createMap() {
-    const map = this.make.tilemap({ key: "map" });
+    const map = this.make.tilemap({ key: `level_${this.getCurrentLevel()}` });
     map.addTilesetImage("main_lev_build_1", "tiles-1");
+    map.addTilesetImage("bg_spikes_tileset", "bg-spikes-tileset");
     return map;
   }
 
   createLayers(map) {
     const tileset = map.getTileset("main_lev_build_1");
+    const tilesetBg = map.getTileset("bg_spikes_tileset");
+
+    map.createStaticLayer("distance", tilesetBg).setDepth(-12);
 
     const platformsColliders = map.createStaticLayer("platforms_colliders", tileset);
     const environment = map.createStaticLayer("environment", tileset).setDepth(-2);
@@ -101,10 +105,18 @@ class PlayScene extends Phaser.Scene {
 
   createBG(map) {
     const bgObject = map.getObjectLayer("distance_bg").objects[0];
-    this.add
+
+    this.spikesImage = this.add
       .tileSprite(bgObject.x, bgObject.y, this.config.width, bgObject.height, "bg-spikes-dark")
       .setOrigin(0, 1)
       .setDepth(-10)
+      .setScrollFactor(0, 1);
+
+    this.skyImage = this.add
+      .tileSprite(0, 0, this.config.width, 180, "sky-play")
+      .setOrigin(0, 0)
+      .setScale(1.1)
+      .setDepth(-11)
       .setScrollFactor(0, 1);
   }
 
@@ -188,12 +200,22 @@ class PlayScene extends Phaser.Scene {
     };
   }
 
+  getCurrentLevel() {
+    return this.registry.get("level") || 1;
+  }
+
   createEndOfLevel(end, player) {
     const endOfLevel = this.physics.add.sprite(end.x, end.y, "end").setAlpha(0).setSize(10, 100).setOrigin(0.5, 1);
     const endOfOverlay = this.physics.add.overlap(player, endOfLevel, () => {
       endOfOverlay.active = false;
+      this.registry.inc("level", 1);
+      this.scene.restart({ gameStatus: "LEVEL_COMPLETED" });
       console.log("you won");
     });
+  }
+  update() {
+    this.spikesImage.tilePositionX = this.cameras.main.scrollX * 0.3;
+    this.skyImage.tilePositionX = this.cameras.main.scrollX * 0.1;
   }
 }
 
