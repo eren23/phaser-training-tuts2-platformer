@@ -15,6 +15,8 @@ class PreloadScene extends Phaser.Scene {
 
     this.load.image("bg-spikes-dark", "../../assets/bg_spikes_dark.png");
     this.load.image("sky-play", "../../assets/sky_play.png");
+    this.load.image("menu-bg", "../../assets/background01.png");
+    this.load.image("back", "../../assets/back.png");
 
     this.load.image("iceball-1", "/assets/weapons/iceball_001.png");
     this.load.image("iceball-2", "/assets/weapons/iceball_002.png");
@@ -69,6 +71,8 @@ class PreloadScene extends Phaser.Scene {
       spacing: 16,
     });
 
+    this.load.audio("theme", "../../assets/music/theme_music.wav");
+
     this.load.once("complete", () => {
       this.startGame();
     });
@@ -76,7 +80,8 @@ class PreloadScene extends Phaser.Scene {
 
   startGame() {
     this.registry.set("level", 1);
-    this.scene.start("PlayScene");
+    this.registry.set("unlocked-levels", 1);
+    this.scene.start("MenuScene");
   }
 
   // create() {

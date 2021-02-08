@@ -16,6 +16,8 @@ class PlayScene extends Phaser.Scene {
     this.score = 0;
     this.hud = new Hud(this, 0, 0);
 
+    this.playBGMusic();
+
     const map = this.createMap();
     initAnims(this.anims);
 
@@ -43,6 +45,7 @@ class PlayScene extends Phaser.Scene {
       },
     });
 
+    this.createBackButton();
     this.setupFollowUpCamera(player);
     this.createEndOfLevel(playerZones.end, player);
 
@@ -74,6 +77,12 @@ class PlayScene extends Phaser.Scene {
   //   this.plotting = false;
   // }
 
+  playBGMusic() {
+    if (this.sound.get("theme")) {
+      return;
+    }
+    this.sound.add("theme", { loop: true, volume: 0.05 }).play();
+  }
   //Customs
   createMap() {
     const map = this.make.tilemap({ key: `level_${this.getCurrentLevel()}` });
@@ -118,6 +127,19 @@ class PlayScene extends Phaser.Scene {
       .setScale(1.1)
       .setDepth(-11)
       .setScrollFactor(0, 1);
+  }
+
+  createBackButton() {
+    const btn = this.add
+      .image(this.config.rightBottomCorner.x, this.config.rightBottomCorner.y, "back")
+      .setScrollFactor(0)
+      .setScale(2)
+      .setOrigin(1, 1)
+      .setInteractive();
+
+    btn.on("pointerup", () => {
+      this.scene.start("MenuScene");
+    });
   }
 
   createGameEvents() {
@@ -208,7 +230,14 @@ class PlayScene extends Phaser.Scene {
     const endOfLevel = this.physics.add.sprite(end.x, end.y, "end").setAlpha(0).setSize(10, 100).setOrigin(0.5, 1);
     const endOfOverlay = this.physics.add.overlap(player, endOfLevel, () => {
       endOfOverlay.active = false;
+
+      if (this.registry.get("level") === this.config.lastLevel) {
+        this.scene.start("CreditsScene");
+        return;
+      }
+
       this.registry.inc("level", 1);
+      this.registry.inc("unlocked-levels", 1);
       this.scene.restart({ gameStatus: "LEVEL_COMPLETED" });
       console.log("you won");
     });
