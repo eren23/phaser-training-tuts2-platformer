@@ -104,6 +104,7 @@ class PlayScene extends Phaser.Scene {
     const playerZones = map.getObjectLayer("player_zones");
     const enemySpawns = map.getObjectLayer("enemy_spawns");
     const collectables = map.getObjectLayer("collectables");
+    this.collectSound = this.sound.add("coin-pickup", { volume: 0.2 });
 
     const traps = map.createStaticLayer("traps", tileset);
 
@@ -163,9 +164,10 @@ class PlayScene extends Phaser.Scene {
   }
 
   onCollect(entity, collectable) {
-    collectable.disableBody(true, true); //first true disables game object, default false, second one is hide
     this.score += parseInt(collectable.score);
     this.hud.updateScoreboard(this.score);
+    this.collectSound.play();
+    collectable.disableBody(true, true); //first true disables game object, default false, second one is hide
   }
 
   createPlayerColliders(player, { colliders }) {

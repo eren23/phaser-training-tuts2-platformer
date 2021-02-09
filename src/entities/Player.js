@@ -36,6 +36,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const bounceRange = [90, 250];
     this.bounceVelocity = Phaser.Math.Between(...bounceRange);
 
+    this.jumpSound = this.scene.sound.add("jump", { volume: 0.2 });
+    this.projectileSound = this.scene.sound.add("projectile-launch", { volume: 0.2 });
+    this.stepSound = this.scene.sound.add("step", { volume: 0.2 });
+    this.swipeSound = this.scene.sound.add("swipe", { volume: 0.2 });
+
     this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
     this.projectiles = new Projectiles(this.scene, "iceball-1");
     this.MeleeWeapon = new MeleeWeapon(this.scene, 0, 0, "sword-default");
@@ -55,8 +60,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(1, 1);
 
     initAnimations(this.scene.anims);
+    this.handleMovements();
 
     this.handleAttacks();
+
+    this.scene.time.addEvent({
+      delay: 400,
+      repeat: -1,
+      callbackScope: this,
+      callback: () => {
+        if (this.isPlayingAnims("run")) {
+          this.stepSound.play();
+        }
+      },
+    });
   }
 
   initEvents() {
@@ -77,8 +94,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const isUpJustDown = Phaser.Input.Keyboard.JustDown(up); // only returns true pey key press
     const onFloor = this.body.onFloor();
 
-    this.handleMovements();
-
     if (left.isDown) {
       this.lastDirection = Phaser.Physics.Arcade.FACING_LEFT;
       this.setVelocityX(-this.playerSpeed);
@@ -92,6 +107,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     if ((isSpaceJustDown || isUpJustDown) && (onFloor || this.jumpCount < this.concecutiveJumps)) {
+      this.jumpSound.play();
       this.setVelocityY(-this.playerSpeed * 1.4);
       this.jumpCount++;
     }
@@ -110,11 +126,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   handleAttacks() {
     this.scene.input.keyboard.on("keydown-Q", () => {
+      this.projectileSound.play();
       this.play("throw", true);
       this.projectiles.fireProjectile(this, "iceball");
     });
 
     this.scene.input.keyboard.on("keydown-E", () => {
+      this.swipeSound.play();
+
       if (this.timeFromLastSwing && this.timeFromLastSwing + this.MeleeWeapon.attackSpeed > getTimestamp()) {
         return;
       }
